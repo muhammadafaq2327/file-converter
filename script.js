@@ -1,77 +1,51 @@
-// ========== Smart File Converter JS ==========
-// Supports: Image->PDF, Image->Text (OCR), PDF Edit, PDF->Image
-// Paid plan placeholders included
+<!DOCTYPE html>
 
-// Include libraries in index.html:
-// <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-// <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-// <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Online File Converter</title>
 
-const fileInput = document.getElementById('fileInput');
-const convertBtn = document.getElementById('convertBtn');
-const outputType = document.getElementById('outputType');
+  <!-- jsPDF for Image → PDF -->
 
-convertBtn.addEventListener('click', async () => {
-    const file = fileInput.files[0];
-    if (!file) { alert('Please select a file'); return; }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    const type = outputType.value;
+  <!-- Tesseract.js for Image → Text (OCR) -->
 
-    if (type === 'imageToPDF') {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imgData = e.target.result;
-            const doc = new jspdf.jsPDF();
-            doc.addImage(imgData, 'JPEG', 10, 10, 180, 0);
-            doc.save('converted.pdf');
-        };
-        reader.readAsDataURL(file);
-    } else if (type === 'imageToText') {
-        Tesseract.recognize(file, 'eng', { logger: m => console.log(m) })
-            .then(({ data: { text } }) => {
-                const blob = new Blob([text], { type: 'text/plain' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'converted.txt';
-                link.click();
-            });
-    } else if (type === 'pdfEdit') {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const arrayBuffer = e.target.result;
-            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-            // Example: remove last page (editable)
-            const pageCount = pdfDoc.getPageCount();
-            pdfDoc.removePage(pageCount - 1);
-            const pdfBytes = await pdfDoc.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'edited.pdf';
-            link.click();
-        };
-        reader.readAsArrayBuffer(file);
-    } else if (type === 'pdfToImage') {
-        alert('PDF to Image conversion is under development for future update (paid feature possible)');
-        // Placeholder for paid feature integration
-    } else {
-        alert('Unsupported conversion type');
-    }
-});
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 
-// ========== Paid Plan Placeholder ==========
-// Example: limit free users to 3 conversions/day
-// For paid users, unlock unlimited conversions and higher quality
+  <!-- pdf-lib for PDF Edit -->
 
-let userPlan = 'free'; // or 'paid'
-const maxFreeConversions = 3;
-let conversionsToday = 0;
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
-function checkPlan() {
-    if (userPlan === 'free' && conversionsToday >= maxFreeConversions) {
-        alert('Upgrade to premium for unlimited conversions and high-quality output');
-        return false;
-    }
-    conversionsToday++;
-    return true;
-}
+  <!-- Custom Script -->
+
+  <script src="script.js" defer></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    form { margin-bottom: 20px; }
+    #statusMessage { color: green; font-weight: bold; margin-top: 10px; }
+  </style>
+
+</head>
+<body>
+
+  <h1>Smart Online File Converter</h1>
+  <p>Upload any file and convert it instantly for free.</p>
+
+  <form id="converterForm">
+    <input type="file" id="fileInput" accept="image/*,.pdf,.txt" />
+    <select id="outputType">
+      <option value="imageToPDF">Image → PDF</option>
+      <option value="imageToText">Image → Text (OCR)</option>
+      <option value="pdfEdit">PDF Edit (Remove last page)</option>
+      <option value="pdfToImage">PDF → Image (Paid Feature)</option>
+    </select>
+    <button type="button" id="convertBtn">Convert Now</button>
+  </form>
+
+  <p id="statusMessage"></p>
+
+</body>
+</html>
