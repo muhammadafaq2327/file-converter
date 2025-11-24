@@ -1,51 +1,58 @@
-<!DOCTYPE html>
+// ========== script.js for Smart Online File Converter ==========
 
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Online File Converter</title>
+document.getElementById('convertBtn').addEventListener('click', async () => {
+    const fileInput = document.getElementById('fileInput');
+    const outputType = document.getElementById('outputType').value;
+    const statusMessage = document.getElementById('statusMessage');
 
-  <!-- jsPDF for Image → PDF -->
+    if (!fileInput.files.length) {
+        alert('Please select a file.');
+        return;
+    }
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    const file = fileInput.files[0];
 
-  <!-- Tesseract.js for Image → Text (OCR) -->
+    try {
+        statusMessage.textContent = 'Processing...';
 
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-
-  <!-- pdf-lib for PDF Edit -->
-
-  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-
-  <!-- Custom Script -->
-
-  <script src="script.js" defer></script>
-
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    form { margin-bottom: 20px; }
-    #statusMessage { color: green; font-weight: bold; margin-top: 10px; }
-  </style>
-
-</head>
-<body>
-
-  <h1>Smart Online File Converter</h1>
-  <p>Upload any file and convert it instantly for free.</p>
-
-  <form id="converterForm">
-    <input type="file" id="fileInput" accept="image/*,.pdf,.txt" />
-    <select id="outputType">
-      <option value="imageToPDF">Image → PDF</option>
-      <option value="imageToText">Image → Text (OCR)</option>
-      <option value="pdfEdit">PDF Edit (Remove last page)</option>
-      <option value="pdfToImage">PDF → Image (Paid Feature)</option>
-    </select>
-    <button type="button" id="convertBtn">Convert Now</button>
-  </form>
-
-  <p id="statusMessage"></p>
-
-</body>
-</html>
+        if (outputType === 'imageToPDF') {
+            // Image → PDF
+            const img = await file.arrayBuffer();
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            const imgData = new Uint8Array(img);
+            pdf.addImage(imgData, 'JPEG', 10, 10, 180, 160);
+            pdf.save(file.name.split('.')[0] + '.pdf');
+            statusMessage.textContent = 'Image converted to PDF successfully!';
+        } else if (outputType === 'imageToText') {
+            // Image → Text (OCR)
+            const textResult = await Tesseract.recognize(file, 'eng');
+            const blob = new Blob([textResult.data.text], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = file.name.split('.')[0] + '.txt';
+            link.click();
+            statusMessage.textContent = 'Image converted to Text successfully!';
+        } else if (outputType === 'pdfEdit') {
+            // PDF Edit (Remove last page)
+            const existingPdfBytes = await file.arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+            const totalPages = pdfDoc.getPageCount();
+            pdfDoc.removePage(totalPages - 1);
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = file.name.split('.')[0] + '_edited.pdf';
+            link.click();
+            statusMessage.textContent = 'PDF edited successfully!';
+        } else if (outputType === 'pdfToImage') {
+            // Paid feature placeholder
+            alert('PDF to Image conversion is under development. Paid feature coming soon!');
+            statusMessage.textContent = 'Paid feature placeholder';
+        }
+    } catch (err) {
+        console.error(err);
+        statusMessage.textContent = 'Error during conversion. Check console for details.';
+    }
+});
