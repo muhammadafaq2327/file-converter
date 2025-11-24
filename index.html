@@ -1,10 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>File Converter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart File Converter</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Your File Converter Website is LIVE!</h1>
-  <p>If you see this page, GitHub Pages is working.</p>
+
+    <div class="container">
+        <h1>Smart Online File Converter</h1>
+        <p>Upload any file and convert it instantly for free.</p>
+
+        <div class="upload-box">
+            <input type="file" id="fileInput">
+        </div>
+
+        <select id="formatSelect">
+            <option value="pdf">Convert to PDF</option>
+            <option value="txt">Convert to TXT</option>
+            <option value="jpg">Convert to JPG</option>
+            <option value="png">Convert to PNG</option>
+        </select>
+
+        <button onclick="convertFile()">Convert Now</button>
+
+        <a id="downloadLink" style="display:none;">Download Converted File</a>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
