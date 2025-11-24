@@ -1,33 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart File Converter</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+// ========== Updated index.html Elements for Smart File Converter ==========
 
-    <div class="container">
-        <h1>Smart Online File Converter</h1>
-        <p>Upload any file and convert it instantly for free.</p>
+/* HTML Example */
+/* Place this inside your existing index.html where the form/buttons are */
 
-        <div class="upload-box">
-            <input type="file" id="fileInput">
-        </div>
+<form id="converterForm">
+  <input type="file" id="fileInput" accept="image/*,.pdf,.txt" />
+  <select id="outputType">
+    <option value="imageToPDF">Image → PDF</option>
+    <option value="imageToText">Image → Text (OCR)</option>
+    <option value="pdfEdit">PDF Edit (Remove last page)</option>
+    <option value="pdfToImage">PDF → Image (Paid Feature)</option>
+  </select>
+  <button type="button" id="convertBtn">Convert Now</button>
+</form>
 
-        <select id="formatSelect">
-            <option value="pdf">Convert to PDF</option>
-            <option value="txt">Convert to TXT</option>
-            <option value="jpg">Convert to JPG</option>
-            <option value="png">Convert to PNG</option>
-        </select>
+<p id="statusMessage"></p>
 
-        <button onclick="convertFile()">Convert Now</button>
-
-        <a id="downloadLink" style="display:none;">Download Converted File</a>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+/* Notes:
+- This dropdown and buttons now match the updated script.js
+- Users can select all conversion types
+- Paid features are shown as placeholders
+*/
